@@ -71,7 +71,11 @@ class JSONFieldBase(six.with_metaclass(SubfieldBase, models.Field)):
         if obj._state.adding:
             meta_pk = obj._meta.pk
             if isinstance(meta_pk, models.OneToOneField):
-                real_pk_name = meta_pk.related_field.name
+                if hasattr(meta_pk, 'related_field'):
+                    real_pk_name = meta_pk.related_field.name
+                else:
+                    # Django 1.9
+                    real_pk_name = meta_pk.related.field_name
             else:
                 real_pk_name = meta_pk.name
             # Make sure the primary key actually exists on the object before
